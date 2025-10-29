@@ -9,48 +9,38 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      - name: Get list of changed files
-        id: changes
-        run: |
-          echo "files=$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | jq -R -s -c 'split("\n") | map(select(length > 0))')" >> $GITHUB_OUTPUT
-
       - name: Send embed to Discord
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
-          curl -H "Content-Type: application/json" \
-          -X POST \
-          -d "$(cat <<EOF
-          {
-            "username": "ScoopBot",
+          echo '{
+            "username": "Scoop Update Bot",
+            "avatar_url": "https://i.imgur.com/your-logo.png",
             "embeds": [{
-              "title": "🛠️ Commit to Scoop's Sandbox",
-              "description": "${{ github.event.head_commit.message }}",
-              "url": "${{ github.event.head_commit.url }}",
+              "title": "🛠️ New Commit to Scoop'\''s Sandbox",
+              "description": "'"${{ github.event.head_commit.message }}"'",
+              "url": "'"${{ github.event.head_commit.url }}"'",
               "color": 5814783,
               "fields": [
                 {
                   "name": "Author",
-                  "value": "${{ github.actor }}",
+                  "value": "'"${{ github.actor }}"'",
                   "inline": true
                 },
                 {
                   "name": "Branch",
-                  "value": "${{ github.ref_name }}",
+                  "value": "'"${{ github.ref_name }}"'",
                   "inline": true
-                },
-                {
-                  "name": "Files Changed",
-                  "value": "${{ steps.changes.outputs.files }}",
-                  "inline": false
                 }
               ],
               "footer": {
-                "text": "Scoop's Sandbox Commit Log"
+                "text": "GitHub → Scoop's Projects"
               },
-              "timestamp": "${{ github.event.head_commit.timestamp }}"
+              "timestamp": "'"${{ github.event.head_commit.timestamp }}"'"
             }]
-          }
-EOF
-          )" \
-          "$DISCORD_WEBHOOK"
+          }' > payload.json
+
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d @payload.json \
+               "$DISCORD_WEBHOOK"
