@@ -3,14 +3,14 @@ name: Discord Commit Notifier
 on:
   push:
     branches:
-      - main  # change to your branch name if needed
+      - main  # or your dev branch
 
 jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
       - name: Send commit to Discord
-        uses: Ilshidur/action-discord@v1
+        uses: Ilshidur/action-discord@master
         with:
           args: |
             **New commit pushed by _${{ github.actor }}_**
