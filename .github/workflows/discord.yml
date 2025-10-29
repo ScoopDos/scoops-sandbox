@@ -3,41 +3,44 @@ name: Discord Commit Embed
 on:
   push:
     branches:
-      - main  # change to your branch name if needed
+      - main  # or your dev branch
 
 jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
       - name: Send embed to Discord
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
-          curl -H "Content-Type: application/json" \
-          -X POST \
-          -d "$(cat <<EOF
-          {
+          echo '{
+            "username": "ScoopBot",
+            "avatar_url": "https://i.imgur.com/your-logo.png",
             "embeds": [{
-              "title": "🛠️ Scoop's Sandbox Commit",
-              "description": "${{ github.event.head_commit.message }}",
-              "url": "${{ github.event.head_commit.url }}",
+              "title": "🛠️ New Commit to Scoop'\''s Sandbox",
+              "description": "'"${{ github.event.head_commit.message }}"'",
+              "url": "'"${{ github.event.head_commit.url }}"'",
               "color": 5814783,
               "fields": [
                 {
                   "name": "Author",
-                  "value": "${{ github.actor }}",
+                  "value": "'"${{ github.actor }}"'",
                   "inline": true
                 },
                 {
                   "name": "Branch",
-                  "value": "${{ github.ref_name }}",
+                  "value": "'"${{ github.ref_name }}"'",
                   "inline": true
                 }
               ],
               "footer": {
                 "text": "GitHub → Discord Commit Notifier"
               },
-              "timestamp": "${{ github.event.head_commit.timestamp }}"
+              "timestamp": "'"${{ github.event.head_commit.timestamp }}"'"
             }]
-          }
-EOF
-          )" \
-          ${{ secrets.DISCORD_WEBHOOK }}
+          }' > payload.json
+
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d @payload.json \
+               "$DISCORD_WEBHOOK"
