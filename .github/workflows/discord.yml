@@ -9,11 +9,14 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Get list of changed files
         id: changes
         run: |
-          FILES=$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | paste -sd ', ' -)
-          echo "files=$FILES" >> $GITHUB_OUTPUT
+          FILES=$(git diff-tree --no-commit-id --name-status -r ${{ github.sha }} | sed 's/\t/ /g' | paste -sd ', ' -)
+          echo "files=$FILES" >> "$GITHUB_OUTPUT"
 
       - name: Send embed to Discord
         env:
