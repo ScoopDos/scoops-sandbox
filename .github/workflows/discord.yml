@@ -14,8 +14,7 @@ jobs:
 
       - name: Get changed files
         run: |
-          FILES=$(git diff --name-status ${{ github.sha }}^ ${{ github.sha }} 2>/dev/null || git show --pretty="" --name-status ${{ github.sha }})
-          FILES=$(echo "$FILES" | sed 's/\t/ /g' | paste -sd ', ' -)
+          FILES=$(git diff-tree --no-commit-id --name-status -r ${{ github.sha }} | sed 's/\t/ /g' | paste -sd ', ' -)
           echo "FILES_CHANGED=$FILES" >> $GITHUB_ENV
 
       - name: Send embed to Discord
