@@ -1,4 +1,4 @@
-name: Discord Commit Embed
+name: Discord Commit Embed for updates
 
 on:
   push:
