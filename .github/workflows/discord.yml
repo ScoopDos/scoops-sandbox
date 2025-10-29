@@ -24,7 +24,7 @@ jobs:
           COMMIT_TITLE=$(echo "$COMMIT_MESSAGE" | head -n1)
           COMMIT_BODY_RAW=$(echo "$COMMIT_MESSAGE" | tail -n +2)
 
-          # Format changed files with emojis and full labelss
+          # Format changed files with emojis and full labels
           FILES=$(git diff --name-status HEAD~1 HEAD | sed 's/\t/ /g')
           FORMATTED=""
           while read -r line; do
@@ -42,9 +42,10 @@ jobs:
           # Map repo name to display name
           REPO_RAW="${{ github.event.repository.name }}"
           case "$REPO_RAW" in
-            Scoop) DISPLAY_NAME="Scoop" ;;
-            scoops-sandbox) DISPLAY_NAME="Scoop-Fivem" ;;
-            scoops-sandybox DISPLAY_NAME="Scoop-Sandbox" ;;
+            scoop) DISPLAY_NAME="Scoop" ;;
+            scoop-sandbox) DISPLAY_NAME="Scoop's Sandbox" ;;
+            scoops-sandbox) DISPLAY_NAME="Scoop-FiveM" ;;
+            scoops-sandybox) DISPLAY_NAME="Scoop's S&Box" ;;
             *) DISPLAY_NAME="$REPO_RAW" ;;
           esac
 
