@@ -3,7 +3,7 @@ name: Discord Commit Embed
 on:
   push:
     branches:
-      - main  # change to your dev branch if needed
+      - main  # change to your branch name if needed
 
 jobs:
   notify:
