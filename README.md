@@ -10,7 +10,7 @@
 
 ---
 
-# Scoop's Sandbox - `v0.1.1-dev`
+# Scoop's Sandbox - `v0.1.2-dev`
 
 **Scoop's Sandbox** is a custom FiveM framework built from scratch for development and testing purposes. It serves as a modular playground for prototyping systems, refining logic, and experimenting with new features — all within a clean, branded environment powered by [ox_core](https://github.com/overextended/ox_core).
 
