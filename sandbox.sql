@@ -7,7 +7,7 @@
 --       \/_____/\/___/   \/_____/\/_____/\/_/ 
 -- Scoop's Sandbox — SQL Schema v0.1-dev
 
--- Character Table
+-- Character Tableddd
 CREATE TABLE IF NOT EXISTS `characters` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `citizenid` VARCHAR(64) NOT NULL UNIQUE,
