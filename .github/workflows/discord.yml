@@ -24,7 +24,7 @@ jobs:
           COMMIT_TITLE=$(echo "$COMMIT_MESSAGE" | head -n1)
           COMMIT_BODY_RAW=$(echo "$COMMIT_MESSAGE" | tail -n +2)
 
-          # Format changed files with emojis and full labels
+          # Format changed files with emojis and full labelss
           FILES=$(git diff --name-status HEAD~1 HEAD | sed 's/\t/ /g')
           FORMATTED=""
           while read -r line; do
