@@ -43,8 +43,8 @@ jobs:
           REPO_RAW="${{ github.event.repository.name }}"
           case "$REPO_RAW" in
             Scoop) DISPLAY_NAME="Scoop" ;;
-            Scoop-Sandbox) DISPLAY_NAME="Scoop's Sandbox" ;;
-            Scoops-Sandbox) DISPLAY_NAME="Scoop's S&Box" ;;
+            scoops-sandbox) DISPLAY_NAME="Scoop-Fivem" ;;
+            scoops-sandybox DISPLAY_NAME="Scoop-S&Box" ;;
             *) DISPLAY_NAME="$REPO_RAW" ;;
           esac
 
