@@ -3,21 +3,20 @@ name: Discord Commit Embed
 on:
   push:
     branches:
-      - main
+      - main  # or your dev branch
 
 jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout code with full history
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 2  # ensures previous commit is available
 
       - name: Get changed files
         run: |
-          FILES=$(git diff-tree --no-commit-id --name-status -r ${{ github.sha }} | sed 's/\t/ /g' | paste -sd ', ' -)
-          if [ -z "$FILES" ]; then
-            FILES=$(git show --pretty="" --name-status ${{ github.sha }} | sed 's/\t/ /g' | paste -sd ', ' -)
-          fi
+          FILES=$(git diff --name-status HEAD~1 HEAD | sed 's/\t/ /g' | paste -sd ', ' -)
           echo "FILES_CHANGED=$FILES" >> $GITHUB_ENV
 
       - name: Send embed to Discord
@@ -28,7 +27,7 @@ jobs:
             \"username\": \"Scoop Update Bot\",
             \"embeds\": [{
               \"title\": \"🛠️ New Commit to Scoop's Sandbox\",
-              \"description\": \"${{ github.event.head_commit.message }}\",
+              \"description\": \"${{ github.event.head_commit.message }}\\n\\nFiles Changed: $FILES_CHANGED\",
               \"url\": \"${{ github.event.head_commit.url }}\",
               \"color\": 5814783,
               \"fields\": [
@@ -41,10 +40,6 @@ jobs:
                   \"name\": \"Branch\",
                   \"value\": \"${{ github.ref_name }}\",
                   \"inline\": true
-                },
-                {
-                  \"name\": \"Files Changed\",
-                  \"value\": \"$FILES_CHANGED\"
                 }
               ],
               \"footer\": {
