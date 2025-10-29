@@ -1,20 +1,40 @@
-name: Discord Commit Notifier
+name: Discord Commit Embed
 
 on:
   push:
     branches:
-      - main  # or your dev branch
+      - main
 
 jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      - name: Send commit to Discord
-        uses: Ilshidur/action-discord@master
-        with:
-          args: |
-            **New commit pushed by _${{ github.actor }}_**
-            Message: `${{ github.event.head_commit.message }}`
-            [View Commit](${{ github.event.head_commit.url }})
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: Send embed to Discord
+        run: |
+          curl -H "Content-Type: application/json" \
+          -X POST \
+          -d '{
+            "embeds": [{
+              "title": "🛠️ New Commit to Scoop\'s Sandbox",
+              "description": "**${{ github.event.head_commit.message }}**",
+              "url": "${{ github.event.head_commit.url }}",
+              "color": 5814783,
+              "fields": [
+                {
+                  "name": "Author",
+                  "value": "${{ github.actor }}",
+                  "inline": true
+                },
+                {
+                  "name": "Branch",
+                  "value": "${{ github.ref_name }}",
+                  "inline": true
+                }
+              ],
+              "footer": {
+                "text": "GitHub → Discord Commit Notifier"
+              },
+              "timestamp": "${{ github.event.head_commit.timestamp }}"
+            }]
+          }' \
+          ${{ secrets.DISCORD_WEBHOOK }}
