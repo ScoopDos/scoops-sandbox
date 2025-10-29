@@ -3,7 +3,7 @@ name: Discord Commit Embed
 on:
   push:
     branches:
-      - main  # or your dev branch
+      - main
 
 jobs:
   notify:
@@ -23,34 +23,36 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
           FILES_CHANGED="${{ steps.changes.outputs.files }}"
-          echo "{\"username\": \"Scoop Update Bot\",
-            \"avatar_url\": \"https://i.imgur.com/your-logo.png\",
-            \"embeds\": [{
-              \"title\": \"🛠️ New Commit to Scoop's Sandbox\",
-              \"description\": \"${{ github.event.head_commit.message }}\",
-              \"url\": \"${{ github.event.head_commit.url }}\",
-              \"color\": 5814783,
-              \"fields\": [
+          echo '{
+            "username": "Scoop Update Bot",
+            "avatar_url": "https://i.imgur.com/your-logo.png",
+            "embeds": [{
+              "title": "🛠️ New Commit to Scoop'\''s Sandbox",
+              "description": "'"${{ github.event.head_commit.message }}"'",
+              "url": "'"${{ github.event.head_commit.url }}"'",
+              "color": 5814783,
+              "fields": [
                 {
-                  \"name\": \"Author\",
-                  \"value\": \"${{ github.actor }}\",
-                  \"inline\": true
+                  "name": "Author",
+                  "value": "'"${{ github.actor }}"'",
+                  "inline": true
                 },
                 {
-                  \"name\": \"Branch\",
-                  \"value\": \"${{ github.ref_name }}\",
-                  \"inline\": true
+                  "name": "Branch",
+                  "value": "'"${{ github.ref_name }}"'",
+                  "inline": true
                 },
                 {
-                  \"name\": \"Files Changed\",
-                  \"value\": \"$FILES_CHANGED\"
+                  "name": "Files Changed",
+                  "value": "'"$FILES_CHANGED"'"
                 }
               ],
-              \"footer\": {
-                \"text\": \"Scoop's Projects\"
+              "footer": {
+                "text": "Scoop'\''s Projects"
               },
-              \"timestamp\": \"${{ github.event.head_commit.timestamp }}\"
-            }]}" > payload.json
+              "timestamp": "'"${{ github.event.head_commit.timestamp }}"'"
+            }]
+          }' > payload.json
 
           curl -H "Content-Type: application/json" \
                -X POST \
