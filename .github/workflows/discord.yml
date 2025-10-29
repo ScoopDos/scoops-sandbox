@@ -12,17 +12,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Get list of changed files
-        id: changes
-        run: |
-          FILES=$(git diff --name-status HEAD~1 HEAD | sed 's/\t/ /g' | paste -sd ', ' -)
-          echo "files=$FILES" >> "$GITHUB_OUTPUT"
-
-      - name: Send embed to Discord
+      - name: Get list of changed files and send to Discord
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
-          FILES_CHANGED="${{ steps.changes.outputs.files }}"
+          FILES=$(git show --pretty="" --name-status ${{ github.sha }} | sed 's/\t/ /g' | paste -sd ', ' -)
+
           echo '{
             "username": "Scoop Update Bot",
             "avatar_url": "https://i.imgur.com/your-logo.png",
@@ -44,7 +39,7 @@ jobs:
                 },
                 {
                   "name": "Files Changed",
-                  "value": "'"$FILES_CHANGED"'"
+                  "value": "'"$FILES"'"
                 }
               ],
               "footer": {
