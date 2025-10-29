@@ -12,7 +12,8 @@ jobs:
       - name: Get list of changed files
         id: changes
         run: |
-          echo "files=$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | paste -sd ', ' -)" >> $GITHUB_OUTPUT
+          FILES=$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | paste -sd ', ' -)
+          echo "files=$FILES" >> "$GITHUB_OUTPUT"
 
       - name: Send embed to Discord
         env:
