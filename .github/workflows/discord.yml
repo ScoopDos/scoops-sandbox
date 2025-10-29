@@ -18,38 +18,36 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
-          cat <<EOF > payload.json
-{
-  "username": "Scoop Update Bot",
-  "avatar_url": "https://i.imgur.com/your-logo.png",
-  "embeds": [{
-    "title": "🛠️ New Commit to Scoop's Sandbox",
-    "description": "${{ github.event.head_commit.message }}",
-    "url": "${{ github.event.head_commit.url }}",
-    "color": 5814783,
-    "fields": [
-      {
-        "name": "Author",
-        "value": "${{ github.actor }}",
-        "inline": true
-      },
-      {
-        "name": "Branch",
-        "value": "${{ github.ref_name }}",
-        "inline": true
-      },
-      {
-        "name": "Files Changed",
-        "value": "${{ steps.changes.outputs.files }}"
-      }
-    ],
-    "footer": {
-      "text": "Scoop's Projects"
-    },
-    "timestamp": "${{ github.event.head_commit.timestamp }}"
-  }]
-}
-EOF
+          echo '{
+            "username": "Scoop Update Bot",
+            "avatar_url": "https://i.imgur.com/your-logo.png",
+            "embeds": [{
+              "title": "🛠️ New Commit to Scoop'\''s Sandbox",
+              "description": "'"${{ github.event.head_commit.message }}"'",
+              "url": "'"${{ github.event.head_commit.url }}"'",
+              "color": 5814783,
+              "fields": [
+                {
+                  "name": "Author",
+                  "value": "'"${{ github.actor }}"'",
+                  "inline": true
+                },
+                {
+                  "name": "Branch",
+                  "value": "'"${{ github.ref_name }}"'",
+                  "inline": true
+                },
+                {
+                  "name": "Files Changed",
+                  "value": "'"${{ steps.changes.outputs.files }}"'"
+                }
+              ],
+              "footer": {
+                "text": "Scoop's Projects"
+              },
+              "timestamp": "'"${{ github.event.head_commit.timestamp }}"'"
+            }]
+          }' > payload.json
 
           curl -H "Content-Type: application/json" \
                -X POST \
