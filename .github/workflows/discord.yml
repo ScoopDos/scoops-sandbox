@@ -1,9 +1,9 @@
-name: Discord Commit Embed for updates
+name: Discord Commit Embed
 
 on:
   push:
     branches:
-      - main
+      - main  # or your dev branch
 
 jobs:
   notify:
@@ -12,12 +12,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Get list of changed files and send to Discord
+      - name: Get changed files
+        run: |
+          FILES=$(git diff --name-status ${{ github.sha }}^ ${{ github.sha }} | sed 's/\t/ /g' | paste -sd ', ' -)
+          echo "FILES_CHANGED=$FILES" >> $GITHUB_ENV
+
+      - name: Send embed to Discord
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
-          FILES=$(git show --pretty="" --name-status ${{ github.sha }} | sed 's/\t/ /g' | paste -sd ', ' -)
-
           echo '{
             "username": "Scoop Update Bot",
             "avatar_url": "https://i.imgur.com/your-logo.png",
@@ -39,7 +42,7 @@ jobs:
                 },
                 {
                   "name": "Files Changed",
-                  "value": "'"$FILES"'"
+                  "value": "'"$FILES_CHANGED"'"
                 }
               ],
               "footer": {
