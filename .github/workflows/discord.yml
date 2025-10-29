@@ -3,7 +3,7 @@ name: Discord Commit Embed
 on:
   push:
     branches:
-      - main
+      - main  # change to your dev branch if needed
 
 jobs:
   notify:
@@ -13,10 +13,11 @@ jobs:
         run: |
           curl -H "Content-Type: application/json" \
           -X POST \
-          -d '{
+          -d "$(cat <<EOF
+          {
             "embeds": [{
-              "title": "🛠️ New Commit to Scoop\'s Sandbox",
-              "description": "**${{ github.event.head_commit.message }}**",
+              "title": "🛠️ Scoop's Sandbox Commit",
+              "description": "${{ github.event.head_commit.message }}",
               "url": "${{ github.event.head_commit.url }}",
               "color": 5814783,
               "fields": [
@@ -36,5 +37,7 @@ jobs:
               },
               "timestamp": "${{ github.event.head_commit.timestamp }}"
             }]
-          }' \
+          }
+EOF
+          )" \
           ${{ secrets.DISCORD_WEBHOOK }}
