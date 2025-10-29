@@ -22,7 +22,7 @@ jobs:
           # Extract commit title and body
           COMMIT_MESSAGE="${{ github.event.head_commit.message }}"
           COMMIT_TITLE=$(echo "$COMMIT_MESSAGE" | head -n1)
-          COMMIT_BODY=$(echo "$COMMIT_MESSAGE" | tail -n +2 | sed ':a;N;$!ba;s/\n/\\n/g')
+          COMMIT_BODY_RAW=$(echo "$COMMIT_MESSAGE" | tail -n +2)
 
           # Format changed files with emojis and full labels
           FILES=$(git diff --name-status HEAD~1 HEAD | sed 's/\t/ /g')
@@ -52,12 +52,20 @@ jobs:
           VERSION=$(git rev-list --count HEAD)
           VERSION_LABEL="v0.0.$VERSION"
 
+          # Conditionally build description
+          if [ -n "$COMMIT_BODY_RAW" ]; then
+            COMMIT_BODY=$(echo "$COMMIT_BODY_RAW" | sed ':a;N;$!ba;s/\n/\\n/g')
+            DESCRIPTION="$COMMIT_TITLE\\n\\n$COMMIT_BODY\\n\\n**Files Changed:**$FORMATTED"
+          else
+            DESCRIPTION="$COMMIT_TITLE\\n\\n**Files Changed:**$FORMATTED"
+          fi
+
           # Build and send embed
           echo "{
             \"username\": \"Scoop Update Bot\",
             \"embeds\": [{
               \"title\": \"🛠️ $DISPLAY_NAME ($VERSION_LABEL)\",
-              \"description\": \"$COMMIT_TITLE\\n\\n$COMMIT_BODY\\n\\n**Files Changed:**$FORMATTED\",
+              \"description\": \"$DESCRIPTION\",
               \"url\": \"${{ github.event.head_commit.url }}\",
               \"color\": 5814783,
               \"fields\": [
