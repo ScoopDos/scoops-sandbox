@@ -50,7 +50,7 @@ jobs:
 
           # Generate version from commit count
           VERSION=$(git rev-list --count HEAD)
-          VERSION_LABEL="Build #$VERSION"
+          VERSION_LABEL="Version 0.0$VERSION"
 
           # Build and send embed
           echo "{
