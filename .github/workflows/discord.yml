@@ -13,7 +13,7 @@ jobs:
       - name: Checkout code with full history
         uses: actions/checkout@v3
         with:
-          fetch-depth: 2
+          fetch-depth: 0  # full history for accurate commit count
 
       - name: Format commit and send embed
         env:
@@ -44,23 +44,19 @@ jobs:
           case "$REPO_RAW" in
             Scoop) DISPLAY_NAME="Scoop" ;;
             Scoop-Sandbox) DISPLAY_NAME="Scoop's Sandbox" ;;
-            Scoop-Sandbox-Dev) DISPLAY_NAME="Scoop's Sandbox (Dev)" ;;
-            Scoops-Sandbox) DISPLAY_NAME="Scoop's Sandbox" ;;
-            Scoops-Sandbox-Dev) DISPLAY_NAME="Scoop's Sandbox (Dev)" ;;
-            Scoops-Sandbox-Sandbox) DISPLAY_NAME="Scoop's S&Box" ;;
-            Scoops-Sandbox-Sandbox-Dev) DISPLAY_NAME="Scoop's S&Box (Dev)" ;;
-            Scoops-Sandbox-Sandbox-Main) DISPLAY_NAME="Scoop's S&Box" ;;
-            Scoops-Sandbox-Sandbox-Dev) DISPLAY_NAME="Scoop's S&Box (Dev)" ;;
-            Scoops-Sandbox-Sandbox-DevBranch) DISPLAY_NAME="Scoop's S&Box (Dev)" ;;
-            Scoops-Sandbox-Sandbox-MainBranch) DISPLAY_NAME="Scoop's S&Box" ;;
+            Scoops-Sandbox) DISPLAY_NAME="Scoop's S&Box" ;;
             *) DISPLAY_NAME="$REPO_RAW" ;;
           esac
+
+          # Generate version from commit count
+          VERSION=$(git rev-list --count HEAD)
+          VERSION_LABEL="Build #$VERSION"
 
           # Build and send embed
           echo "{
             \"username\": \"Scoop Update Bot\",
             \"embeds\": [{
-              \"title\": \"🛠️ $DISPLAY_NAME\",
+              \"title\": \"🛠️ $DISPLAY_NAME ($VERSION_LABEL)\",
               \"description\": \"$COMMIT_TITLE\\n\\n$COMMIT_BODY\\n\\n**Files Changed:**$FORMATTED\",
               \"url\": \"${{ github.event.head_commit.url }}\",
               \"color\": 5814783,
