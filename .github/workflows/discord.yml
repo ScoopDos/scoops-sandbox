@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - dev
 
 jobs:
   notify:
@@ -18,32 +19,49 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
-          # Extract commit title and body safely
+          # Extract commit title and body
           COMMIT_MESSAGE="${{ github.event.head_commit.message }}"
           COMMIT_TITLE=$(echo "$COMMIT_MESSAGE" | head -n1)
           COMMIT_BODY=$(echo "$COMMIT_MESSAGE" | tail -n +2 | sed ':a;N;$!ba;s/\n/\\n/g')
 
-          # Get changed files and format them
+          # Format changed files with emojis and full labels
           FILES=$(git diff --name-status HEAD~1 HEAD | sed 's/\t/ /g')
           FORMATTED=""
           while read -r line; do
             STATUS=$(echo "$line" | cut -d' ' -f1)
             FILE=$(echo "$line" | cut -d' ' -f2-)
             case "$STATUS" in
-              A) LABEL="**Added:**" ;;
-              M) LABEL="**Modified:**" ;;
-              D) LABEL="**Deleted:**" ;;
-              *) LABEL="**Changed:**" ;;
+              A) LABEL="🟩 **Added:**" ;;
+              M) LABEL="🟨 **Modified:**" ;;
+              D) LABEL="🟥 **Deleted:**" ;;
+              *) LABEL="🔧 **Changed:**" ;;
             esac
             FORMATTED="$FORMATTED\\n• $LABEL $FILE"
           done <<< "$FILES"
 
-          # Build and send the embed
+          # Map repo name to display name
+          REPO_RAW="${{ github.event.repository.name }}"
+          case "$REPO_RAW" in
+            Scoop) DISPLAY_NAME="Scoop" ;;
+            Scoop-Sandbox) DISPLAY_NAME="Scoop's Sandbox" ;;
+            Scoop-Sandbox-Dev) DISPLAY_NAME="Scoop's Sandbox (Dev)" ;;
+            Scoops-Sandbox) DISPLAY_NAME="Scoop's Sandbox" ;;
+            Scoops-Sandbox-Dev) DISPLAY_NAME="Scoop's Sandbox (Dev)" ;;
+            Scoops-Sandbox-Sandbox) DISPLAY_NAME="Scoop's S&Box" ;;
+            Scoops-Sandbox-Sandbox-Dev) DISPLAY_NAME="Scoop's S&Box (Dev)" ;;
+            Scoops-Sandbox-Sandbox-Main) DISPLAY_NAME="Scoop's S&Box" ;;
+            Scoops-Sandbox-Sandbox-Dev) DISPLAY_NAME="Scoop's S&Box (Dev)" ;;
+            Scoops-Sandbox-Sandbox-DevBranch) DISPLAY_NAME="Scoop's S&Box (Dev)" ;;
+            Scoops-Sandbox-Sandbox-MainBranch) DISPLAY_NAME="Scoop's S&Box" ;;
+            *) DISPLAY_NAME="$REPO_RAW" ;;
+          esac
+
+          # Build and send embed
           echo "{
             \"username\": \"Scoop Update Bot\",
             \"embeds\": [{
-              \"title\": \"$COMMIT_TITLE\",
-              \"description\": \"$COMMIT_BODY\\n\\n**Files Changed:**$FORMATTED\",
+              \"title\": \"🛠️ $DISPLAY_NAME\",
+              \"description\": \"$COMMIT_TITLE\\n\\n$COMMIT_BODY\\n\\n**Files Changed:**$FORMATTED\",
               \"url\": \"${{ github.event.head_commit.url }}\",
               \"color\": 5814783,
               \"fields\": [
